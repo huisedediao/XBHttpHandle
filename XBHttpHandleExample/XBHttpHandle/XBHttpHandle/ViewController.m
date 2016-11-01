@@ -29,15 +29,9 @@
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
-//    NSLog(@"%p",[XBHttpHandle shareHttpHandle]);
     [self postTest];
-    NSLog(@"%@",[NSHomeDirectory() stringByAppendingString:@"/Documents/qq.dmg"]);
-//    [self downloadTest];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//        [self.navigationController pushViewController:[UIViewController new] animated:YES];
-    });
-}
 
+}
 
 -(void)downloadTest
 {
@@ -62,16 +56,11 @@
             NSLog(@"failureBlock");
         }];
     });
-    
-
 
 }
 
 -(void)postTest
 {
-//    http://b.xincheping.com/index.php?r=club/User/Login&Username=huisedediao&Password=123456789
-//    @{@"r":@"club/User/Login",@"Username":@"huisedediao",@"Password":@"123456789"}
-//    userid=string&tokenid=string&typeid=string
     [XBHttpHandle postRequestWithUrlStr:@"http://112.74.195.215:100/VHDWS/wsbbs.asmx/StatisticsInfo" params:@{@"userid":@"1",@"tokenid":@"1",@"typeid":@"1"} successBlcok:^(id data) {
         XBTestModel *model=[XBTestModel mj_objectWithKeyValues:data];
         NSLog(@"\r%@",data);
