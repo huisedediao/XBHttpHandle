@@ -40,7 +40,7 @@
 #ifdef TARGET_IPHONE_SIMULATOR
             configuration=[NSURLSessionConfiguration defaultSessionConfiguration];
 #else
-           configuration=[NSURLSessionConfiguration backgroundSessionConfiguration:@"lalala"];
+            configuration=[NSURLSessionConfiguration backgroundSessionConfiguration:@"lalala"];
 #endif
             handle.session=[NSURLSession sessionWithConfiguration:configuration delegate:handle delegateQueue:[NSOperationQueue new]];
         }
@@ -59,40 +59,41 @@
 /** get请求 */
 +(void)getRequestWithUrlStr:(NSString *)urlStr successBlcok:(RequestSuccessBlock)successBlcok failureBlock:(RequestFailureBlock)failureBlock
 {
-        NSURL *url=[NSURL URLWithString:urlStr];
-        NSURLSession *session=[NSURLSession sharedSession];
-        NSURLSessionDataTask *dataTask=[session dataTaskWithURL:url completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-            id result=[NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-            BOOL resultIsDict=[result isKindOfClass:[NSDictionary class]];
+    NSURL *url=[NSURL URLWithString:urlStr];
+    NSURLSession *session=[NSURLSession sharedSession];
+    NSURLSessionDataTask *dataTask=[session dataTaskWithURL:url completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        id result=[NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        BOOL resultIsDict=[result isKindOfClass:[NSDictionary class]];
+        BOOL resultIsArr=[result isKindOfClass:[NSArray class]];
 #ifdef DEBUG
-            NSLog(@"\r\r网络请求：get 请求\r\r请求链接是：\r%@\r\r请求结果是：\r%@\r\r\r\r\r",urlStr,resultIsDict?result:data);
+        NSLog(@"\r\r网络请求：get 请求\r\r请求链接是：\r%@\r\r请求结果是：\r%@\r\r\r\r\r",urlStr,resultIsDict?result:data);
 #endif
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (error)
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (error)
+            {
+                if (failureBlock)
                 {
-                    if (failureBlock)
+                    RequestFailureBlock faBlock=failureBlock;
+                    faBlock(error);
+                }
+            }
+            else
+            {
+                if (successBlcok)
+                {
+                    RequestSuccessBlock suBlock=successBlcok;
+                    if (resultIsDict || resultIsArr)//如果结果是字典或者数组，返回结果
                     {
-                        RequestFailureBlock faBlock=failureBlock;
-                        faBlock(error);
+                        suBlock(result);
+                    }
+                    else//否则直接返回数据
+                    {
+                        suBlock(data);
                     }
                 }
-                else
-                {
-                    if (successBlcok)
-                    {
-                        RequestSuccessBlock suBlock=successBlcok;
-                        if (resultIsDict)//如果结果是字典，返回字典
-                        {
-                            suBlock(result);
-                        }
-                        else//否则直接返回数据
-                        {
-                            suBlock(data);
-                        }
-                    }
-                }
-            });
-        }];
+            }
+        });
+    }];
     [dataTask resume];
 }
 /** post请求 */
@@ -134,6 +135,7 @@
                                           
                                           id result=[NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
                                           BOOL resultIsDict=[result isKindOfClass:[NSDictionary class]];
+                                          BOOL resultIsArr=[result isKindOfClass:[NSArray class]];
 #ifdef DEBUG
                                           NSLog(@"\r\r网络请求：post 请求\r\r请求链接是：\r%@\r\r请求参数是：\r%@\r\r请求结果是：\r%@\r\r转换成get请求：\r%@\r\r\r\r\r",urlStr,params,resultIsDict?result:data,[urlStr stringByAppendingString:[@"?" stringByAppendingString:paramsStr]]);
 #endif
@@ -151,7 +153,7 @@
                                                   if (successBlcok)
                                                   {
                                                       RequestSuccessBlock suBlock=successBlcok;
-                                                      if (resultIsDict)//如果结果是字典，返回字典
+                                                      if (resultIsDict || resultIsArr)//如果结果是字典或者数组，返回结果
                                                       {
                                                           suBlock(result);
                                                       }
@@ -239,7 +241,7 @@
         {
             if(error.code==-999)//手动取消
             {
-            
+                
             }
             else
             {
@@ -252,7 +254,7 @@
         }
         else
         {
-
+            
         }
     });
 }

@@ -64,6 +64,7 @@
     NSURLSessionDataTask *dataTask=[session dataTaskWithURL:url completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         id result=[NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
         BOOL resultIsDict=[result isKindOfClass:[NSDictionary class]];
+        BOOL resultIsArr=[result isKindOfClass:[NSArray class]];
 #ifdef DEBUG
         NSLog(@"\r\r网络请求：get 请求\r\r请求链接是：\r%@\r\r请求结果是：\r%@\r\r\r\r\r",urlStr,resultIsDict?result:data);
 #endif
@@ -81,7 +82,7 @@
                 if (successBlcok)
                 {
                     RequestSuccessBlock suBlock=successBlcok;
-                    if (resultIsDict)//如果结果是字典，返回字典
+                    if (resultIsDict || resultIsArr)//如果结果是字典或者数组，返回结果
                     {
                         suBlock(result);
                     }
@@ -134,6 +135,7 @@
                                           
                                           id result=[NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
                                           BOOL resultIsDict=[result isKindOfClass:[NSDictionary class]];
+                                          BOOL resultIsArr=[result isKindOfClass:[NSArray class]];
 #ifdef DEBUG
                                           NSLog(@"\r\r网络请求：post 请求\r\r请求链接是：\r%@\r\r请求参数是：\r%@\r\r请求结果是：\r%@\r\r转换成get请求：\r%@\r\r\r\r\r",urlStr,params,resultIsDict?result:data,[urlStr stringByAppendingString:[@"?" stringByAppendingString:paramsStr]]);
 #endif
@@ -151,7 +153,7 @@
                                                   if (successBlcok)
                                                   {
                                                       RequestSuccessBlock suBlock=successBlcok;
-                                                      if (resultIsDict)//如果结果是字典，返回字典
+                                                      if (resultIsDict || resultIsArr)//如果结果是字典或者数组，返回结果
                                                       {
                                                           suBlock(result);
                                                       }
