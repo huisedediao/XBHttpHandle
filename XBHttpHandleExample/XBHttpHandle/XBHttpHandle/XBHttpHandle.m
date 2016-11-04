@@ -73,7 +73,7 @@
             {
                 if (failureBlock)
                 {
-                    RequestFailureBlock faBlock=failureBlock;
+                    RequestFailureBlock faBlock=[failureBlock copy];
                     faBlock(error);
                 }
             }
@@ -81,7 +81,7 @@
             {
                 if (successBlcok)
                 {
-                    RequestSuccessBlock suBlock=successBlcok;
+                    RequestSuccessBlock suBlock=[successBlcok copy];
                     if (resultIsDict || resultIsArr)//如果结果是字典或者数组，返回结果
                     {
                         suBlock(result);
@@ -144,7 +144,7 @@
                                               {
                                                   if (failureBlock)
                                                   {
-                                                      RequestFailureBlock faBlock=failureBlock;
+                                                      RequestFailureBlock faBlock=[failureBlock copy];
                                                       faBlock(error);
                                                   }
                                               }
@@ -152,7 +152,7 @@
                                               {
                                                   if (successBlcok)
                                                   {
-                                                      RequestSuccessBlock suBlock=successBlcok;
+                                                      RequestSuccessBlock suBlock=[successBlcok copy];
                                                       if (resultIsDict || resultIsArr)//如果结果是字典或者数组，返回结果
                                                       {
                                                           suBlock(result);
