@@ -10,7 +10,7 @@
 
 typedef void (^DownloadProgressBlock)(float progress);
 typedef void (^DownloadCompleteBlock)(void);
-typedef void (^RequestSuccessBlock) (NSData *data);
+typedef void (^RequestSuccessBlock) (id data);
 typedef void (^RequestFailureBlock) (NSError *error);
 
 
