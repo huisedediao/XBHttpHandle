@@ -40,7 +40,7 @@
 #ifdef TARGET_IPHONE_SIMULATOR
             configuration=[NSURLSessionConfiguration defaultSessionConfiguration];
 #else
-            configuration=[NSURLSessionConfiguration backgroundSessionConfiguration:@"lalala"];
+           configuration=[NSURLSessionConfiguration backgroundSessionConfiguration:@"lalala"];
 #endif
             handle.session=[NSURLSession sessionWithConfiguration:configuration delegate:handle delegateQueue:[NSOperationQueue new]];
         }
@@ -57,51 +57,51 @@
 
 #pragma mark - 类方法
 /** get请求 */
-+(void)getRequestWithUrlStr:(NSString *)urlStr successBlcok:(RequestSuccessBlock)successBlcok failureBlock:(RequestFailureBlock)failureBlock
++(void)getRequestWithUrlStr:(NSString *)urlStr successBlock:(RequestSuccessBlock)successBlock failureBlock:(RequestFailureBlock)failureBlock
 {
-    NSURL *url=[NSURL URLWithString:urlStr];
-    NSURLSession *session=[NSURLSession sharedSession];
-    NSURLSessionDataTask *dataTask=[session dataTaskWithURL:url completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-        id result=[NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-        BOOL resultIsDict=[result isKindOfClass:[NSDictionary class]];
-        BOOL resultIsArr=[result isKindOfClass:[NSArray class]];
+        NSURL *url=[NSURL URLWithString:urlStr];
+        NSURLSession *session=[NSURLSession sharedSession];
+        NSURLSessionDataTask *dataTask=[session dataTaskWithURL:url completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+            id result=[NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            BOOL resultIsDict=[result isKindOfClass:[NSDictionary class]];
+            BOOL resultIsArr=[result isKindOfClass:[NSArray class]];
 #ifdef DEBUG
-        NSLog(@"\r\r网络请求：get 请求\r\r请求链接是：\r%@\r\r请求结果是：\r%@\r\r\r\r\r",urlStr,resultIsDict?result:data);
+            NSLog(@"\r\r网络请求：get 请求\r\r请求链接是：\r%@\r\r请求结果是：\r%@\r\r\r\r\r",urlStr,resultIsDict?result:data);
 #endif
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (error)
-            {
-                if (failureBlock)
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (error)
                 {
-                    RequestFailureBlock faBlock=[failureBlock copy];
-                    faBlock(error);
-                }
-            }
-            else
-            {
-                if (successBlcok)
-                {
-                    RequestSuccessBlock suBlock=[successBlcok copy];
-                    if (resultIsDict || resultIsArr)//如果结果是字典或者数组，返回结果
+                    if (failureBlock)
                     {
-                        suBlock(result);
-                    }
-                    else//否则直接返回数据
-                    {
-                        suBlock(data);
+                        RequestFailureBlock faBlock=[failureBlock copy];
+                        faBlock(error);
                     }
                 }
-            }
-        });
-    }];
+                else
+                {
+                    if (successBlock)
+                    {
+                        RequestSuccessBlock suBlock=[successBlock copy];
+                        if (resultIsDict || resultIsArr)//如果结果是字典，返回字典
+                        {
+                            suBlock(result);
+                        }
+                        else//否则直接返回数据
+                        {
+                            suBlock(data);
+                        }
+                    }
+                }
+            });
+        }];
     [dataTask resume];
 }
 /** post请求 */
-+(void)postRequestWithUrlStr:(NSString *)urlStr params:(NSDictionary *)params successBlcok:(RequestSuccessBlock)successBlcok failureBlock:(RequestFailureBlock)failureBlock
++(void)postRequestWithUrlStr:(NSString *)urlStr params:(NSDictionary *)params successBlock:(RequestSuccessBlock)successBlock failureBlock:(RequestFailureBlock)failureBlock
 {
     if (params.count<1)
     {
-        [XBHttpHandle getRequestWithUrlStr:urlStr successBlcok:successBlcok failureBlock:failureBlock];
+        [XBHttpHandle getRequestWithUrlStr:urlStr successBlock:successBlock failureBlock:failureBlock];
         return;
     }
     
@@ -150,10 +150,10 @@
                                               }
                                               else
                                               {
-                                                  if (successBlcok)
+                                                  if (successBlock)
                                                   {
-                                                      RequestSuccessBlock suBlock=[successBlcok copy];
-                                                      if (resultIsDict || resultIsArr)//如果结果是字典或者数组，返回结果
+                                                      RequestSuccessBlock suBlock=[successBlock copy];
+                                                      if (resultIsDict || resultIsArr)//如果结果是字典，返回字典
                                                       {
                                                           suBlock(result);
                                                       }
@@ -181,9 +181,9 @@
     XBHttpHandleDownTaskModel *model=[XBHttpHandle shareHttpHandle].downTaskModelDicM[savePath];
     if (model)//如果当前任务已存在，只是被挂起
     {
-        model.progressBlock=progressBlock;
-        model.completeBlcok=completeBlock;
-        model.failureBlock=failureBlock;
+        model.progressBlock=[progressBlock copy];
+        model.completeBlock=[completeBlock copy];
+        model.failureBlock=[failureBlock copy];
         if (model.isStopping==YES)
         {
             model.downTask=[[XBHttpHandle shareHttpHandle] downloadTaskWithPath:model.savePath];
@@ -197,7 +197,7 @@
         {
             if (completeBlock)
             {
-                DownloadCompleteBlock comBlock=completeBlock;
+                DownloadCompleteBlock comBlock=[completeBlock copy];
                 comBlock();
             }
         }
@@ -209,9 +209,9 @@
             {
                 model=[XBHttpHandleDownTaskModel new];
                 model.savePath=savePath;
-                model.progressBlock=progressBlock;
-                model.completeBlcok=completeBlock;
-                model.failureBlock=failureBlock;
+                model.progressBlock=[progressBlock copy];
+                model.completeBlock=[completeBlock copy];
+                model.failureBlock=[failureBlock copy];
                 [[XBHttpHandle shareHttpHandle].downTaskModelDicM setObject:model forKey:savePath];
             }
             model.downTask=downTask;
@@ -223,9 +223,9 @@
             model=[XBHttpHandleDownTaskModel new];
             model.downTask=downTask;
             model.savePath=savePath;
-            model.progressBlock=progressBlock;
-            model.completeBlcok=completeBlock;
-            model.failureBlock=failureBlock;
+            model.progressBlock=[progressBlock copy];
+            model.completeBlock=[completeBlock copy];
+            model.failureBlock=[failureBlock copy];
             [[XBHttpHandle shareHttpHandle].downTaskModelDicM setObject:model forKey:savePath];
             [downTask resume];
         }
@@ -241,20 +241,20 @@
         {
             if(error.code==-999)//手动取消
             {
-                
+            
             }
             else
             {
                 if (model.failureBlock)
                 {
-                    RequestFailureBlock failureBlock=model.failureBlock;
+                    RequestFailureBlock failureBlock=[model.failureBlock copy];
                     failureBlock(error);
                 }
             }
         }
         else
         {
-            
+
         }
     });
 }
@@ -271,11 +271,11 @@ didFinishDownloadingToURL:(NSURL *)location
             [[NSFileManager defaultManager] removeItemAtPath:[model.savePath stringByAppendingString:downTaskSavePathAppendTemp] error:nil];
         }
     }
-    if (model.completeBlcok)
+    if (model.completeBlock)
     {
         dispatch_async(dispatch_get_main_queue(), ^{
-            DownloadCompleteBlock completeBlcok=model.completeBlcok;
-            completeBlcok();
+            DownloadCompleteBlock completeBlock=[model.completeBlock copy];
+            completeBlock();
         });
     }
     [[XBHttpHandle shareHttpHandle].downTaskModelDicM removeObjectForKey:model.savePath];
@@ -291,7 +291,7 @@ totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
     if (model.progressBlock)
     {
         dispatch_async(dispatch_get_main_queue(), ^{
-            DownloadProgressBlock progressBlock=model.progressBlock;
+            DownloadProgressBlock progressBlock=[model.progressBlock copy];
             progressBlock(1.0*totalBytesWritten/totalBytesExpectedToWrite);
         });
     }

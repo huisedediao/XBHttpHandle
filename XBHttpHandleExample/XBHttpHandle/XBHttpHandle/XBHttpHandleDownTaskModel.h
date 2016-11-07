@@ -17,7 +17,7 @@ typedef void (^RequestFailureBlock) (NSError *error);
 @interface XBHttpHandleDownTaskModel : NSObject
 @property (nonatomic,strong) NSURLSessionDownloadTask *downTask;
 @property (nonatomic,copy) DownloadProgressBlock progressBlock;
-@property (nonatomic,copy) DownloadCompleteBlock completeBlcok;
+@property (nonatomic,copy) DownloadCompleteBlock completeBlock;
 @property (nonatomic,copy) RequestFailureBlock failureBlock;
 @property (nonatomic,copy) NSString *savePath;
 @property (nonatomic,assign) BOOL isStopping;

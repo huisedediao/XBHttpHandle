@@ -18,13 +18,13 @@
 /** get请求
  *  参数1：下载的url
  */
-+(void)getRequestWithUrlStr:(NSString *)urlStr successBlcok:(RequestSuccessBlock)successBlcok failureBlock:(RequestFailureBlock)failureBlock;
++(void)getRequestWithUrlStr:(NSString *)urlStr successBlock:(RequestSuccessBlock)successBlock failureBlock:(RequestFailureBlock)failureBlock;
 
 /** post请求
  *  参数1：下载的url
  *  参数2：参数
  */
-+(void)postRequestWithUrlStr:(NSString *)urlStr params:(NSDictionary *)params successBlcok:(RequestSuccessBlock)successBlcok failureBlock:(RequestFailureBlock)failureBlock;
++(void)postRequestWithUrlStr:(NSString *)urlStr params:(NSDictionary *)params successBlock:(RequestSuccessBlock)successBlock failureBlock:(RequestFailureBlock)failureBlock;
 
 /** 下载大文件，支持后台下载
  *  参数1：下载的url
