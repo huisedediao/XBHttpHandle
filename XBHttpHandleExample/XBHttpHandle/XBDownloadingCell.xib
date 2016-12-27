@@ -37,6 +37,7 @@
                         <state key="normal" title="start">
                             <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </state>
+                        <state key="selected" title="stop"/>
                         <connections>
                             <action selector="startTask:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="BcR-8d-Upb"/>
                         </connections>

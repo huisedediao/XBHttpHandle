@@ -470,9 +470,12 @@ expectedTotalBytes:(int64_t)expectedTotalBytes
     if(model.isStopping==NO)
     {
         [model.downTask cancelByProducingResumeData:^(NSData * _Nullable resumeData)
-         {
+         {/*
+             BOOL result=[resumeData writeToFile:[model.savePath stringByAppendingString:downTaskSavePathAppendTemp] atomically:YES];
+             */
              BOOL result=[NSKeyedArchiver archiveRootObject:resumeData toFile:[model.savePath stringByAppendingString:downTaskSavePathAppendTemp]];
-             NSLog(@"归档路径：%@",[model.savePath stringByAppendingString:downTaskSavePathAppendTemp]);
+             //NSLog(@"归档路径：%@",[model.savePath stringByAppendingString:downTaskSavePathAppendTemp]);
+           
              if (result == YES)
              {
                  NSLog(@"存储未完成任务结果：成功");
@@ -481,6 +484,7 @@ expectedTotalBytes:(int64_t)expectedTotalBytes
              {
                  NSLog(@"存储未完成任务结果：失败");
              }
+             
          }];
         model.isStopping=YES;
     }
@@ -530,7 +534,9 @@ expectedTotalBytes:(int64_t)expectedTotalBytes
 
 -(NSURLSessionDownloadTask *)downloadTaskWithPath:(NSString *)savePath
     {
+        NSString *str=[savePath stringByAppendingString:downTaskSavePathAppendTemp];
         NSData *resumeData=[NSKeyedUnarchiver unarchiveObjectWithFile:[savePath stringByAppendingString:downTaskSavePathAppendTemp]];
+        
         return [[XBHttpHandle shareHttpHandle].session downloadTaskWithResumeData:resumeData];
     }
     @end

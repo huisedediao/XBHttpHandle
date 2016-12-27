@@ -25,6 +25,7 @@
     if (self=[super initWithCoder:aDecoder])
     {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(undateProgress:) name:XBDownloadTaskProgressNoti object:nil];
+
     }
     return self;
 }
@@ -32,13 +33,12 @@
     sender.selected=!sender.selected;
     if (sender.selected)
     {
-        [sender setTitle:@"stop" forState:UIControlStateNormal];
         self.task.isDownloading=YES;
+        [[XBDownloadTaskManager shareManager] startTask:self.task];
         [[XBDownloadTaskManager shareManager] startTask:self.task];
     }
     else
     {
-        [sender setTitle:@"start" forState:UIControlStateNormal];
         self.task.isDownloading=NO;
         [[XBDownloadTaskManager shareManager] stopTask:self.task];
     }
@@ -66,11 +66,11 @@
     
     if (task.isDownloading)
     {
-        [self.startBtn setTitle:@"stop" forState:UIControlStateNormal];
+        self.startBtn.selected=YES;
     }
     else
     {
-        [self.startBtn setTitle:@"start" forState:UIControlStateNormal];
+        self.startBtn.selected=NO;
     }
 }
 

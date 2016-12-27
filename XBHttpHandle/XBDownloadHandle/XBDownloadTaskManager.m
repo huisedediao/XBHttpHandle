@@ -81,17 +81,20 @@
 
 -(void)stopTask:(XBDownloadTask *)task
 {
+    task.isDownloading=NO;
     [XBHttpHandle stopTaskWithXBDownloadTask:task];
 }
 
 -(void)saveUncompleteTask
 {
-    NSArray *unCompleteTaskArr=[self.unCompleteList copy];
-    for (XBDownloadTask *task in unCompleteTaskArr)
+    @synchronized (self)
     {
-        if (task.isComplete==NO) {
-            task.isDownloading=NO;
-            [XBHttpHandle stopTaskWithXBDownloadTask:task];
+        NSArray *unCompleteTaskArr=[self.unCompleteList copy];
+        for (XBDownloadTask *task in unCompleteTaskArr)
+        {
+            if (task.isComplete==NO) {
+                [self stopTask:task];
+            }
         }
     }
 }

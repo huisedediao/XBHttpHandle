@@ -33,10 +33,7 @@
 
     [self addNoti];
 }
--(void)viewDidDisappear:(BOOL)animated
-{
-    //[[XBDownloadTaskManager shareManager] stopTaskAndstoreTaskList];
-}
+
 -(void)viewWillAppear:(BOOL)animated
 {
     [self reloadTable];
