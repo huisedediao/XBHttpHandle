@@ -8,13 +8,18 @@
 
 #import "XBViewController.h"
 #import "XBHttpHandle.h"
+#import "XBDefine.h"
+#import "XBDownloadTaskManager.h"
+#import "XBDownloadingCell.h"
+#import "XBTaskCompleteCell.h"
+
 #define downUrlStr @"http://dldir1.qq.com/qqfile/QQforMac/QQ_V4.0.2.dmg"
 
-@interface XBViewController ()
-@property (weak, nonatomic) IBOutlet UILabel *label1;
-@property (weak, nonatomic) IBOutlet UILabel *label2;
-- (IBAction)start:(id)sender;
-- (IBAction)stop:(id)sender;
+#define completeID @"completeCell"
+#define downlondingId @"downloadingCell"
+
+@interface XBViewController ()<UITableViewDelegate,UITableViewDataSource>
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 
 @end
@@ -23,59 +28,118 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    [self downloadTest];
-}
+    [self.tableView registerNib:[UINib nibWithNibName:@"XBTaskCompleteCell" bundle:nil] forCellReuseIdentifier:completeID];
+    [self.tableView registerNib:[UINib nibWithNibName:@"XBDownloadingCell" bundle:nil] forCellReuseIdentifier:downlondingId];
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    [self addNoti];
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+-(void)viewDidDisappear:(BOOL)animated
+{
+    //[[XBDownloadTaskManager shareManager] stopTaskAndstoreTaskList];
 }
-*/
+-(void)viewWillAppear:(BOOL)animated
+{
+    [self reloadTable];
+}
+-(void)reloadTable
+{
+    [self.tableView reloadData];
+}
+-(void)addNoti
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(downloadTaskProgressNoti:) name:XBDownloadTaskProgressNoti object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(downloadTaskCompleteNoti:) name:XBDownloadTaskCompleteNoti object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(downloadTaskFailureNoti:) name:XBDownloadTaskFailureNoti object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadTable) name:UIApplicationWillEnterForegroundNotification object:nil];
+}
 -(void)dealloc
 {
-    NSLog(@"----->dealloc");
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
-
--(void)downloadTest
+-(void)downloadTaskProgressNoti:(NSNotification *)noti
 {
-    NSString *savePath=[NSHomeDirectory() stringByAppendingString:@"/Documents/qq1.dmg"];
-    [XBHttpHandle downFileWithUrlStr:downUrlStr savePath:savePath progressBlock:^(float progress) {
-        NSLog(@"%f",progress);
-        _label1.text=[NSString stringWithFormat:@"%.2f%%",progress*100];
-    } complete:^{
-        _label1.text=[NSString stringWithFormat:@"100%%"];
-    } failureBlock:^(NSError *error) {
-        NSLog(@"failureBlock");
-    }];
+    if ([noti.object isKindOfClass:[XBDownloadTask class]])
+    {
+        XBDownloadTask *task=(XBDownloadTask *)noti.object;
+    }
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NSString *savePath1=[NSHomeDirectory() stringByAppendingString:@"/Documents/qq2.dmg"];
-        [XBHttpHandle downFileWithUrlStr:downUrlStr savePath:savePath1 progressBlock:^(float progress) {
-            NSLog(@"%f",progress);
-            _label2.text=[NSString stringWithFormat:@"%.2f%%",progress*100];
-        } complete:^{
-            _label2.text=[NSString stringWithFormat:@"100%%"];
-        } failureBlock:^(NSError *error) {
-            NSLog(@"failureBlock");
-        }];
-    });
+}
+-(void)downloadTaskCompleteNoti:(NSNotification *)noti
+{
+    if ([noti.object isKindOfClass:[XBDownloadTask class]])
+    {
+        XBDownloadTask *task=(XBDownloadTask *)noti.object;
+        [self.tableView reloadData];
+    }
+}
+-(void)downloadTaskFailureNoti:(NSNotification *)noti
+{
+    if ([noti.object isKindOfClass:[NSError class]])
+    {
+        NSError *error=(NSError *)noti.object;
+    }
 }
 
-- (IBAction)start:(id)sender {
-        [XBHttpHandle startUncompleteTask];
+-(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 2;
 }
 
-- (IBAction)stop:(id)sender {
-    [XBHttpHandle saveUncompleteTask];
+
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    if (section==0)
+    {
+        return [XBDownloadTaskManager shareManager].completeList.count;
+    }
+    else
+    {
+        return [XBDownloadTaskManager shareManager].unCompleteList.count;
+    }
 }
+-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section==0)
+    {
+        XBTaskCompleteCell *cell=[tableView dequeueReusableCellWithIdentifier:completeID];
+        cell.contentView.backgroundColor=RandColor;
+        XBDownloadTask *task=[XBDownloadTaskManager shareManager].completeList[indexPath.row];
+        cell.task=task;
+        return cell;
+    }
+    else
+    {
+        XBDownloadingCell *cell=[tableView dequeueReusableCellWithIdentifier:downlondingId];
+        cell.contentView.backgroundColor=RandColor;
+        XBDownloadTask *task=[XBDownloadTaskManager shareManager].unCompleteList[indexPath.row];
+        cell.task=task;
+        return cell;
+    }
+}
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 50;
+}
+-(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    UILabel *header=[UILabel new];
+    header.backgroundColor=[UIColor whiteColor];
+    header.frame=CGRectMake(0, 0, ScreenWidth, 30);
+    header.textColor=[UIColor blackColor];
+    if (section==0)
+    {
+        header.text=@"已完成";
+    }
+    else
+    {
+        header.text=@"下载中";
+    }
+    return header;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 30;
+}
+
 @end

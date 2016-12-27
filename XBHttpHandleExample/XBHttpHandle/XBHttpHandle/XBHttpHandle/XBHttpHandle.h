@@ -33,6 +33,12 @@
  */
 +(void)downFileWithUrlStr:(NSString *)urlStr savePath:(NSString *)savePath progressBlock:(DownloadProgressBlock)progressBlock complete:(DownloadCompleteBlock)completeBlock failureBlock:(RequestFailureBlock)failureBlock;
 
+/** 下载大文件，支持后台下载
+ *  参数1：模型
+ *  注意：必须用真机！！！
+ */
++(void)downFileWithXBDownloadTask:(XBDownloadTask *)task progressBlock:(DownloadProgressBlockWithTask)progressBlock complete:(DownloadCompleteBlockWithTask)completeBlock failureBlock:(RequestFailureBlock)failureBlock;
+
 /** 暂停未完成的任务
  *  手动暂停，或者在app被杀死时，在appdelegate的- (void)applicationWillTerminate:(UIApplication *)application 方法里调用
  */
@@ -42,5 +48,10 @@
  *  如果是重新打开的app或者已经完成的任务，调此方法不起作用
  */
 +(void)startUncompleteTask;
+
+/**
+ *  停止任务
+ */
++(void)stopTaskWithXBDownloadTask:(XBDownloadTask *)task;
 
 @end
