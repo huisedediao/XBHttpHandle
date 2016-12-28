@@ -8,7 +8,8 @@
 
 #import "XBHttpHandle.h"
 #import <objc/runtime.h>
-
+//系统版本
+#define SystemVersion [[UIDevice currentDevice].systemVersion doubleValue]
 #define downTaskSavePathAppendTemp @"XBDownloadTemp"
 
 @interface XBHttpHandle ()<NSURLSessionDownloadDelegate>
@@ -65,7 +66,7 @@
     /** get请求 */
 +(void)getRequestWithUrlStr:(NSString *)urlStr successBlock:(RequestSuccessBlock)successBlock failureBlock:(RequestFailureBlock)failureBlock
     {
-        NSURL *url=[NSURL URLWithString:urlStr];
+        NSURL *url=[NSURL URLWithString:[XBHttpHandle stringUseNSUTF8:urlStr]];
         NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:15];
         NSURLSession *session=[NSURLSession sharedSession];
         NSURLSessionDataTask *dataTask=[session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
@@ -155,7 +156,7 @@
         }
         
         //确定请求路径
-        NSURL *url = [NSURL URLWithString:urlStr];
+        NSURL *url = [NSURL URLWithString:[XBHttpHandle stringUseNSUTF8:urlStr]];
         //创建可变请求对象
         NSMutableURLRequest *requestM = [NSMutableURLRequest requestWithURL:url];
         //修改请求方法
@@ -224,7 +225,7 @@
 #pragma mark - 下载相关
 +(void)downFileWithXBDownloadTask:(XBDownloadTask *)task progressBlock:(DownloadProgressBlockWithTask)progressBlock complete:(DownloadCompleteBlockWithTask)completeBlock failureBlock:(RequestFailureBlock)failureBlock
 {
-    NSString *urlStr=task.urlStr;
+    NSString *urlStr=[XBHttpHandle stringUseNSUTF8:task.urlStr];
     NSString *savePath=task.savePath;
 #ifdef DEBUG
     NSLog(@"\r\r正在下载，下载地址：\r%@\r\r下载完成后的存储路径：\r%@\r\r\r\r\r",urlStr,savePath);
@@ -254,6 +255,11 @@
         }
         else if ([[NSFileManager defaultManager] fileExistsAtPath:[savePath stringByAppendingString:downTaskSavePathAppendTemp]])//如果之前有下载，但是没有完成
         {
+            if (SystemVersion > 10.0 && SystemVersion <10.2) {
+                [[NSFileManager defaultManager] removeItemAtPath:[savePath stringByAppendingString:downTaskSavePathAppendTemp] error:nil];
+                [XBHttpHandle downFileWithXBDownloadTask:task progressBlock:progressBlock complete:completeBlock failureBlock:failureBlock];
+                return;
+            }
             NSURLSessionDownloadTask *downTask=[[XBHttpHandle shareHttpHandle] downloadTaskWithPath:savePath];
             model=[XBHttpHandle shareHttpHandle].downTaskModelDicM[savePath];
             if (model==nil)
@@ -286,6 +292,7 @@
 }
 +(void)downFileWithUrlStr:(NSString *)urlStr savePath:(NSString *)savePath progressBlock:(DownloadProgressBlock)progressBlock complete:(DownloadCompleteBlock)completeBlock failureBlock:(RequestFailureBlock)failureBlock
     {
+        urlStr=[XBHttpHandle stringUseNSUTF8:urlStr];
 #ifdef DEBUG
         NSLog(@"\r\r正在下载，下载地址：\r%@\r\r下载完成后的存储路径：\r%@\r\r\r\r\r",urlStr,savePath);
 #endif
@@ -314,6 +321,11 @@
             }
             else if ([[NSFileManager defaultManager] fileExistsAtPath:[savePath stringByAppendingString:downTaskSavePathAppendTemp]])//如果之前有下载，但是没有完成
             {
+                if (SystemVersion > 10.0 && SystemVersion <10.2) {
+                    [[NSFileManager defaultManager] removeItemAtPath:[savePath stringByAppendingString:downTaskSavePathAppendTemp] error:nil];
+                    [XBHttpHandle downFileWithUrlStr:urlStr savePath:savePath progressBlock:progressBlock complete:completeBlock failureBlock:failureBlock];
+                    return;
+                }
                 NSURLSessionDownloadTask *downTask=[[XBHttpHandle shareHttpHandle] downloadTaskWithPath:savePath];
                 model=[XBHttpHandle shareHttpHandle].downTaskModelDicM[savePath];
                 if (model==nil)
@@ -539,4 +551,34 @@ expectedTotalBytes:(int64_t)expectedTotalBytes
         
         return [[XBHttpHandle shareHttpHandle].session downloadTaskWithResumeData:resumeData];
     }
+
+/**
+ 网址中文转码
+ */
++(NSString *)stringUseNSUTF8:(NSString *)str
+{
+    if([XBHttpHandle isChineseStr:str])//网址带中文,转码
+    {
+        return [[str stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@" " withString:@""];
+    }
+    return [str stringByReplacingOccurrencesOfString:@" " withString:@""];
+}
+
+/**
+ 判断字符串中是否有中文
+ */
++(BOOL)isChineseStr:(NSString *)str
+{
+    for(int i=0; i< [str length];i++)
+    {
+        int a = [str characterAtIndex:i];
+        if( a > 0x4e00 && a < 0x9fff)
+        {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+
     @end
