@@ -79,8 +79,10 @@
         
         //拼接参数
         NSMutableString *paramsStr=[@"" mutableCopy];
-        for (NSString *key in params)
+        NSArray *allKeys = [params allKeys];
+        for (NSString *key in allKeys)
         {
+            NSInteger index = [allKeys indexOfObject:key];
             NSString *paramStr = nil;
             id para = params[key];
             if ([para isKindOfClass:[NSString class]])
@@ -98,7 +100,10 @@
             
             NSString *str=[key stringByAppendingString:[@"="stringByAppendingString:paramStr]];
             [paramsStr appendString:str];
-            [paramsStr appendString:@"&"];
+            if (index != allKeys.count - 1)
+            {
+                [paramsStr appendString:@"&"];
+            }
         }
         //        if (params.count<1)
         //        {
@@ -298,3 +303,4 @@
 }
 
 @end
+
