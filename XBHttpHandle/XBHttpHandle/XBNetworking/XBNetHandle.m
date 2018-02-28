@@ -98,7 +98,7 @@
         NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:requestM completionHandler:
                                           ^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
                                               
-                                              id result=[NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                                              id result = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:nil] : nil;
                                               BOOL resultIsDict=[result isKindOfClass:[NSDictionary class]];
                                               BOOL resultIsArr=[result isKindOfClass:[NSArray class]];
 #ifdef DEBUG
