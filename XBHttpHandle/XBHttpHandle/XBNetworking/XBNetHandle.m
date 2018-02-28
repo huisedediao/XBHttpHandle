@@ -81,15 +81,30 @@
         NSMutableString *paramsStr=[@"" mutableCopy];
         for (NSString *key in params)
         {
-            NSString *str=[key stringByAppendingString:[@"="stringByAppendingString:params[key]]];
+            NSString *paramStr = nil;
+            id para = params[key];
+            if ([para isKindOfClass:[NSString class]])
+            {
+                paramStr = para;
+            }
+            else if ([para isKindOfClass:[NSNumber class]])
+            {
+                paramStr = [NSString stringWithFormat:@"%zd",[para integerValue]];
+            }
+            else
+            {
+                paramStr = para;
+            }
+            
+            NSString *str=[key stringByAppendingString:[@"="stringByAppendingString:paramStr]];
             [paramsStr appendString:str];
             [paramsStr appendString:@"&"];
         }
-        if (params.count<1)
-        {
-            [paramsStr appendString:@"&"];
-        }
-        [paramsStr appendString:@"type=JSON"];
+        //        if (params.count<1)
+        //        {
+        //            [paramsStr appendString:@"&"];
+        //        }
+        //        [paramsStr appendString:@"type=JSON"];
         //设置请求体
         requestM.HTTPBody = [paramsStr dataUsingEncoding:NSUTF8StringEncoding];
         //创建会话对象
