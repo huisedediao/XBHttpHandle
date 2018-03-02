@@ -40,18 +40,50 @@
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
         NSURLSession *session = [NSURLSession sharedSession];
         NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-            NSLog(@"\rGET请求\r请求链接是：%@",urlStr);
-            NSLog(@"请求结果是：%@",data);
+            id result = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:nil] : nil;
+            BOOL resultIsDict=[result isKindOfClass:[NSDictionary class]];
+            BOOL resultIsArr=[result isKindOfClass:[NSArray class]];
+#ifdef DEBUG
+            NSLog(@"\rGET请求\r请求链接是：\r%@",urlStr);
+            NSLog(@"\r\r请求结果是：\r%@\r\r\r\r\r",(resultIsDict||resultIsArr)?result:data);
+#endif
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (error)
                 {
-                    failureBlock(error);
+                    if (failureBlock)
+                    {
+                        XBFailureBlock faBlock=[failureBlock copy];
+                        faBlock(error);
+                    }
                 }
-                else if (data)
+                else
                 {
-                    successBlock(data);
+                    if (successBlock)
+                    {
+                        XBRequestSuccessBlock suBlock=[successBlock copy];
+                        if (resultIsDict || resultIsArr)//如果结果是字典，返回字典
+                        {
+                            suBlock(result);
+                        }
+                        else//否则直接返回数据
+                        {
+                            suBlock(data);
+                        }
+                    }
                 }
             });
+            //            NSLog(@"\rGET请求\r请求链接是：%@",urlStr);
+            //            NSLog(@"请求结果是：%@",data);
+            //            dispatch_async(dispatch_get_main_queue(), ^{
+            //                if (error)
+            //                {
+            //                    failureBlock(error);
+            //                }
+            //                else if (data)
+            //                {
+            //                    successBlock(data);
+            //                }
+            //            });
         }];
         
         [task resume];
@@ -122,7 +154,7 @@
                                               BOOL resultIsDict=[result isKindOfClass:[NSDictionary class]];
                                               BOOL resultIsArr=[result isKindOfClass:[NSArray class]];
 #ifdef DEBUG
-                                              NSLog(@"\r\r网络请求：post 请求\r\r请求链接是：\r%@\r\r请求参数是：\r%@\r\r请求结果是：\r%@\r\r转换成get请求：\r%@\r\r\r\r\r",urlStr,params,resultIsDict?result:data,[urlStr stringByAppendingString:[@"?" stringByAppendingString:paramsStr]]);
+                                              NSLog(@"\r\r网络请求：post 请求\r\r请求链接是：\r%@\r\r请求参数是：\r%@\r\r请求结果是：\r%@\r\r转换成get请求：\r%@\r\r\r\r\r",urlStr,params,(resultIsDict||resultIsArr)?result:data,[urlStr stringByAppendingString:[@"?" stringByAppendingString:paramsStr]]);
 #endif
                                               dispatch_async(dispatch_get_main_queue(), ^{
                                                   if (error)
@@ -303,4 +335,3 @@
 }
 
 @end
-
