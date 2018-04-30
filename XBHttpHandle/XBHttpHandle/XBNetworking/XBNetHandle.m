@@ -8,12 +8,15 @@
 
 #import "XBNetHandle.h"
 
+///服务器返回数据异常的错误码
+#define kResponseErrorCode (1008611)
 
 @interface XBNetHandle () <NSURLSessionDownloadDelegate>
 
 @end
 
 @implementation XBNetHandle
+
 
 + (instancetype)shared
 {
@@ -40,6 +43,22 @@
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
         NSURLSession *session = [NSURLSession sharedSession];
         NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+            if ([response isKindOfClass:[NSHTTPURLResponse class]])
+            {
+                NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+                if (httpResponse.statusCode != 200)
+                {
+                    if (failureBlock)
+                    {
+                        XBFailureBlock faBlock=[failureBlock copy];
+                        NSError *error = [[NSError alloc] initWithDomain:@"服务器返回数据异常" code:kResponseErrorCode userInfo:nil];
+                        
+                        faBlock(error);
+                    }
+                    return;
+                }
+            }
+            
             id result = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:nil] : nil;
             BOOL resultIsDict=[result isKindOfClass:[NSDictionary class]];
             BOOL resultIsArr=[result isKindOfClass:[NSArray class]];
@@ -149,7 +168,26 @@
         //创建请求 Task
         NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:requestM completionHandler:
                                           ^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+                                              if ([response isKindOfClass:[NSHTTPURLResponse class]])
+                                              {
+                                                  NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+                                                  if (httpResponse.statusCode != 200)
+                                                  {
+                                                      if (failureBlock)
+                                                      {
+                                                          XBFailureBlock faBlock=[failureBlock copy];
+                                                          NSError *error = [[NSError alloc] initWithDomain:@"服务器返回数据异常" code:kResponseErrorCode userInfo:nil];
+                                                          
+                                                          faBlock(error);
+                                                      }
+                                                      return;
+                                                  }
+                                              }
                                               
+                                              if ([data isKindOfClass:NSClassFromString(@"NSZeroData")])
+                                              {
+                                                  
+                                              }
                                               id result = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:nil] : nil;
                                               BOOL resultIsDict=[result isKindOfClass:[NSDictionary class]];
                                               BOOL resultIsArr=[result isKindOfClass:[NSArray class]];
@@ -335,3 +373,4 @@
 }
 
 @end
+
