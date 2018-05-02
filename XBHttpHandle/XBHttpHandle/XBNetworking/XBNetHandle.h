@@ -10,6 +10,9 @@
 #import "XBNetworkingPublic.h"
 #import "XBDownloadTask.h"
 
+///服务器返回数据异常的错误码
+#define kResponseErrorCode (1008611)
+
 @interface XBNetHandle : NSObject
 
 @property (nonatomic,strong) NSURLSession *session;

@@ -8,8 +8,6 @@
 
 #import "XBNetHandle.h"
 
-///服务器返回数据异常的错误码
-#define kResponseErrorCode (1008611)
 
 @interface XBNetHandle () <NSURLSessionDownloadDelegate>
 
@@ -32,6 +30,36 @@
     return handle;
 }
 
++ (NSError *)handleHttpUrlResponse:(NSURLResponse *)response
+{
+    NSError *error = nil;
+    if ([response isKindOfClass:[NSHTTPURLResponse class]])
+    {
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+        NSInteger code = httpResponse.statusCode;
+        if (code == 200)
+        {
+            
+        }
+        else if (code == 404)
+        {
+            error = [[NSError alloc] initWithDomain:@"请求的页面不存在" code:kResponseErrorCode userInfo:nil];
+        }
+        else if (code == 503)
+        {
+            error = [[NSError alloc] initWithDomain:@"服务不可用" code:kResponseErrorCode userInfo:nil];
+        }
+        else if (code == -1001)
+        {
+            error = [[NSError alloc] initWithDomain:@"请求超时" code:kResponseErrorCode userInfo:nil];
+        }
+        else
+        {
+            error = [[NSError alloc] initWithDomain:@"服务器返回数据异常" code:kResponseErrorCode userInfo:nil];
+        }
+    }
+    return error;
+}
 
 #pragma mark - get、post请求
 /*----- get请求 -----*/
@@ -43,20 +71,14 @@
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
         NSURLSession *session = [NSURLSession sharedSession];
         NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-            if ([response isKindOfClass:[NSHTTPURLResponse class]])
+            NSError *httpError = [XBNetHandle handleHttpUrlResponse:response];
+            if (httpError)
             {
-                NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-                if (httpResponse.statusCode != 200)
+                if (failureBlock)
                 {
-                    if (failureBlock)
-                    {
-                        XBFailureBlock faBlock=[failureBlock copy];
-                        NSError *error = [[NSError alloc] initWithDomain:@"服务器返回数据异常" code:kResponseErrorCode userInfo:nil];
-                        
-                        faBlock(error);
-                    }
-                    return;
+                    failureBlock(httpError);
                 }
+                return;
             }
             
             id result = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:nil] : nil;
@@ -168,20 +190,14 @@
         //创建请求 Task
         NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:requestM completionHandler:
                                           ^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-                                              if ([response isKindOfClass:[NSHTTPURLResponse class]])
+                                              NSError *httpError = [XBNetHandle handleHttpUrlResponse:response];
+                                              if (httpError)
                                               {
-                                                  NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-                                                  if (httpResponse.statusCode != 200)
+                                                  if (failureBlock)
                                                   {
-                                                      if (failureBlock)
-                                                      {
-                                                          XBFailureBlock faBlock=[failureBlock copy];
-                                                          NSError *error = [[NSError alloc] initWithDomain:@"服务器返回数据异常" code:kResponseErrorCode userInfo:nil];
-                                                          
-                                                          faBlock(error);
-                                                      }
-                                                      return;
+                                                      failureBlock(httpError);
                                                   }
+                                                  return;
                                               }
                                               
                                               if ([data isKindOfClass:NSClassFromString(@"NSZeroData")])
