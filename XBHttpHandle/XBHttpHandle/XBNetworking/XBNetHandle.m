@@ -41,7 +41,7 @@
         {
             
         }
-        else if (code == 404)
+        else if (code == 404 || code == -1100)
         {
             error = [[NSError alloc] initWithDomain:@"请求的页面不存在" code:kResponseErrorCode userInfo:nil];
         }
