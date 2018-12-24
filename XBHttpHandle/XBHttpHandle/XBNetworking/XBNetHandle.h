@@ -23,6 +23,7 @@
 + (void)postRequestWithUrlStr:(NSString *)urlStr params:(NSDictionary *)params successBlock:(XBRequestSuccessBlock)successBlock failureBlock:(XBFailureBlock)failureBlock;
 
 #pragma mark - 下载方法
+/////注意，这里不可以直接调用，需要下载文件时，使用XBDownloadManager下载
 + (void)downFileWith:(XBDownloadTask *)xbTask;
 + (void)stop:(XBDownloadTask *)xbTask;
 @end
