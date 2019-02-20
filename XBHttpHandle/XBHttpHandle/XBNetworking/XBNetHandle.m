@@ -74,10 +74,12 @@
             NSError *httpError = [XBNetHandle handleHttpUrlResponse:response];
             if (httpError)
             {
-                if (failureBlock)
-                {
-                    failureBlock(httpError);
-                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (failureBlock)
+                    {
+                        failureBlock(httpError);
+                    }
+                });
                 return;
             }
             
@@ -193,10 +195,12 @@
                                               NSError *httpError = [XBNetHandle handleHttpUrlResponse:response];
                                               if (httpError)
                                               {
-                                                  if (failureBlock)
-                                                  {
-                                                      failureBlock(httpError);
-                                                  }
+                                                  dispatch_async(dispatch_get_main_queue(), ^{
+                                                      if (failureBlock)
+                                                      {
+                                                          failureBlock(httpError);
+                                                      }
+                                                  });
                                                   return;
                                               }
                                               
@@ -240,6 +244,7 @@
         [dataTask resume];
     }
 }
+
 #pragma mark - 其他方法
 /**
  网址中文转码

@@ -242,6 +242,7 @@
 				TargetAttributes = {
 					F1FF6A241F3077F7001EC42A = {
 						CreatedOnToolsVersion = 8.3.3;
+						DevelopmentTeam = RC2BP8QGY9;
 						ProvisioningStyle = Automatic;
 					};
 					F1FF6A3D1F3077F7001EC42A = {
@@ -466,10 +467,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = RC2BP8QGY9;
 				INFOPLIST_FILE = XBHttpHandle/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.company.XBHttpHandle;
+				PRODUCT_BUNDLE_IDENTIFIER = com.xxb.study;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -478,10 +480,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = RC2BP8QGY9;
 				INFOPLIST_FILE = XBHttpHandle/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.company.XBHttpHandle;
+				PRODUCT_BUNDLE_IDENTIFIER = com.xxb.study;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
