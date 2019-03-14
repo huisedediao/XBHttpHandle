@@ -30,42 +30,6 @@
     return handle;
 }
 
-+ (NSError *)handleHttpUrlResponse:(NSURLResponse *)response responseError:(NSError *)responseError
-{
-    NSInteger code = 200;
-    NSError *error = nil;
-    if (responseError)
-    {
-        code = responseError.code;
-    }
-    if (code == 200 && [response isKindOfClass:[NSHTTPURLResponse class]])
-    {
-        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-        code = httpResponse.statusCode;
-    }
-    
-    if (code == 200)
-    {
-        
-    }
-    else if (code == 404 || code == -1100 || code == -1003)
-    {
-        error = [[NSError alloc] initWithDomain:@"请求的页面不存在" code:kResponseErrorCode userInfo:nil];
-    }
-    else if (code == 503)
-    {
-        error = [[NSError alloc] initWithDomain:@"服务不可用" code:kResponseErrorCode userInfo:nil];
-    }
-    else if (code == -1001)
-    {
-        error = [[NSError alloc] initWithDomain:@"请求超时" code:kResponseErrorCode userInfo:nil];
-    }
-    else
-    {
-        error = [[NSError alloc] initWithDomain:@"服务器返回数据异常" code:kResponseErrorCode userInfo:nil];
-    }
-    return error;
-}
 
 #pragma mark - get、post请求
 /*----- get请求 -----*/
@@ -73,7 +37,7 @@
 {
     if (urlStr.length)
     {
-        NSURL *url = [NSURL URLWithString:urlStr];
+        NSURL *url = [NSURL URLWithString:[XBNetHandle stringUseNSUTF8:urlStr]];
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
         NSURLSession *session = [NSURLSession sharedSession];
         NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
@@ -139,7 +103,6 @@
     }
 }
 
-
 /*----- post请求 -----*/
 + (void)postRequestWithUrlStr:(NSString *)urlStr params:(NSDictionary *)params successBlock:(XBRequestSuccessBlock)successBlock failureBlock:(XBFailureBlock)failureBlock
 {
@@ -159,38 +122,39 @@
         requestM.HTTPMethod = @"POST";
         
         //拼接参数
-        NSMutableString *paramsStr=[@"" mutableCopy];
-        NSArray *allKeys = [params allKeys];
-        for (NSString *key in allKeys)
-        {
-            NSInteger index = [allKeys indexOfObject:key];
-            NSString *paramStr = nil;
-            id para = params[key];
-            if ([para isKindOfClass:[NSString class]])
-            {
-                paramStr = para;
-            }
-            else if ([para isKindOfClass:[NSNumber class]])
-            {
-                paramStr = [NSString stringWithFormat:@"%zd",[para integerValue]];
-            }
-            else
-            {
-                paramStr = para;
-            }
-            
-            NSString *str=[key stringByAppendingString:[@"="stringByAppendingString:paramStr]];
-            [paramsStr appendString:str];
-            if (index != allKeys.count - 1)
-            {
-                [paramsStr appendString:@"&"];
-            }
-        }
-        //        if (params.count<1)
+        NSMutableString *paramsStr = [XBNetHandle getParamsStrWithParamsDic:params];
+        //        NSMutableString *paramsStr=[@"" mutableCopy];
+        //        NSArray *allKeys = [params allKeys];
+        //        for (NSString *key in allKeys)
         //        {
-        //            [paramsStr appendString:@"&"];
+        //            NSInteger index = [allKeys indexOfObject:key];
+        //            NSString *paramStr = nil;
+        //            id para = params[key];
+        //            if ([para isKindOfClass:[NSString class]])
+        //            {
+        //                paramStr = para;
+        //            }
+        //            else if ([para isKindOfClass:[NSNumber class]])
+        //            {
+        //                paramStr = [NSString stringWithFormat:@"%zd",[para integerValue]];
+        //            }
+        //            else
+        //            {
+        //                paramStr = para;
+        //            }
+        //
+        //            NSString *str=[key stringByAppendingString:[@"="stringByAppendingString:paramStr]];
+        //            [paramsStr appendString:str];
+        //            if (index != allKeys.count - 1)
+        //            {
+        //                [paramsStr appendString:@"&"];
+        //            }
         //        }
-        //        [paramsStr appendString:@"type=JSON"];
+        if (params.count < 1)
+        {
+            [paramsStr appendString:@"&"];
+        }
+        [paramsStr appendString:@"type=JSON"];
         //设置请求体
         requestM.HTTPBody = [paramsStr dataUsingEncoding:NSUTF8StringEncoding];
         //创建会话对象
@@ -277,6 +241,85 @@
         }
     }
     return NO;
+}
+
+/**
+ 把参数字典拼接成参数字符串
+ */
++ (NSMutableString *)getParamsStrWithParamsDic:(NSDictionary *)params
+{
+    NSMutableString *paramsStr = [NSMutableString new];
+    NSArray *allKeys = [params allKeys];
+    for (NSString *key in allKeys)
+    {
+        NSInteger index = [allKeys indexOfObject:key];
+        NSString *paramStr = nil;
+        id para = params[key];
+        if ([para isKindOfClass:[NSString class]])
+        {
+            paramStr = para;
+        }
+        else if ([para isKindOfClass:[NSNumber class]])
+        {
+            paramStr = [NSString stringWithFormat:@"%zd",[para integerValue]];
+        }
+        else if ([para isKindOfClass:[NSDictionary class]])
+        {
+            paramStr = [XBNetHandle getParamsStrWithParamsDic:para];
+        }
+        else
+        {
+            paramsStr = para;
+        }
+        
+        NSString *str=[key stringByAppendingString:[@"="stringByAppendingString:paramStr]];
+        [paramsStr appendString:str];
+        if (index != allKeys.count - 1)
+        {
+            [paramsStr appendString:@"&"];
+        }
+    }
+    return paramsStr;
+}
+
+/**
+ 处理服务器错误
+ */
++ (NSError *)handleHttpUrlResponse:(NSURLResponse *)response responseError:(NSError *)responseError
+{
+    NSInteger code = 200;
+    NSError *error = nil;
+    if (responseError)
+    {
+        code = responseError.code;
+    }
+    if (code == 200 && [response isKindOfClass:[NSHTTPURLResponse class]])
+    {
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+        code = httpResponse.statusCode;
+    }
+    
+    if (code == 200)
+    {
+        
+    }
+    else if (code == 404 || code == -1100 || code == -1003)
+    {
+        error = [[NSError alloc] initWithDomain:@"请求的页面不存在" code:kResponseErrorCode userInfo:nil];
+    }
+    else if (code == 503)
+    {
+        error = [[NSError alloc] initWithDomain:@"服务不可用" code:kResponseErrorCode userInfo:nil];
+    }
+    else if (code == -1001)
+    {
+        error = [[NSError alloc] initWithDomain:@"请求超时" code:kResponseErrorCode userInfo:nil];
+    }
+    else
+    {
+        error = [[NSError alloc] initWithDomain:@"服务器返回数据异常" code:kResponseErrorCode userInfo:nil];
+    }
+    return error;
 }
 
 
