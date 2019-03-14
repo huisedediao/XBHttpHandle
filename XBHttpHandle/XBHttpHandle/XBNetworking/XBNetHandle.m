@@ -30,33 +30,39 @@
     return handle;
 }
 
-+ (NSError *)handleHttpUrlResponse:(NSURLResponse *)response
++ (NSError *)handleHttpUrlResponse:(NSURLResponse *)response responseError:(NSError *)responseError
 {
+    NSInteger code = 200;
     NSError *error = nil;
-    if ([response isKindOfClass:[NSHTTPURLResponse class]])
+    if (responseError)
+    {
+        code = responseError.code;
+    }
+    if (code == 200 && [response isKindOfClass:[NSHTTPURLResponse class]])
     {
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-        NSInteger code = httpResponse.statusCode;
-        if (code == 200)
-        {
-            
-        }
-        else if (code == 404 || code == -1100)
-        {
-            error = [[NSError alloc] initWithDomain:@"请求的页面不存在" code:kResponseErrorCode userInfo:nil];
-        }
-        else if (code == 503)
-        {
-            error = [[NSError alloc] initWithDomain:@"服务不可用" code:kResponseErrorCode userInfo:nil];
-        }
-        else if (code == -1001)
-        {
-            error = [[NSError alloc] initWithDomain:@"请求超时" code:kResponseErrorCode userInfo:nil];
-        }
-        else
-        {
-            error = [[NSError alloc] initWithDomain:@"服务器返回数据异常" code:kResponseErrorCode userInfo:nil];
-        }
+        code = httpResponse.statusCode;
+    }
+    
+    if (code == 200)
+    {
+        
+    }
+    else if (code == 404 || code == -1100 || code == -1003)
+    {
+        error = [[NSError alloc] initWithDomain:@"请求的页面不存在" code:kResponseErrorCode userInfo:nil];
+    }
+    else if (code == 503)
+    {
+        error = [[NSError alloc] initWithDomain:@"服务不可用" code:kResponseErrorCode userInfo:nil];
+    }
+    else if (code == -1001)
+    {
+        error = [[NSError alloc] initWithDomain:@"请求超时" code:kResponseErrorCode userInfo:nil];
+    }
+    else
+    {
+        error = [[NSError alloc] initWithDomain:@"服务器返回数据异常" code:kResponseErrorCode userInfo:nil];
     }
     return error;
 }
@@ -71,7 +77,7 @@
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
         NSURLSession *session = [NSURLSession sharedSession];
         NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-            NSError *httpError = [XBNetHandle handleHttpUrlResponse:response];
+            NSError *httpError = [XBNetHandle handleHttpUrlResponse:response responseError:error];
             if (httpError)
             {
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -192,7 +198,7 @@
         //创建请求 Task
         NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:requestM completionHandler:
                                           ^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-                                              NSError *httpError = [XBNetHandle handleHttpUrlResponse:response];
+                                              NSError *httpError = [XBNetHandle handleHttpUrlResponse:response responseError:error];
                                               if (httpError)
                                               {
                                                   dispatch_async(dispatch_get_main_queue(), ^{
@@ -244,7 +250,6 @@
         [dataTask resume];
     }
 }
-
 #pragma mark - 其他方法
 /**
  网址中文转码
