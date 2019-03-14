@@ -85,18 +85,6 @@
                     }
                 }
             });
-            //            NSLog(@"\rGET请求\r请求链接是：%@",urlStr);
-            //            NSLog(@"请求结果是：%@",data);
-            //            dispatch_async(dispatch_get_main_queue(), ^{
-            //                if (error)
-            //                {
-            //                    failureBlock(error);
-            //                }
-            //                else if (data)
-            //                {
-            //                    successBlock(data);
-            //                }
-            //            });
         }];
         
         [task resume];
@@ -123,38 +111,11 @@
         
         //拼接参数
         NSMutableString *paramsStr = [XBNetHandle getParamsStrWithParamsDic:params];
-        //        NSMutableString *paramsStr=[@"" mutableCopy];
-        //        NSArray *allKeys = [params allKeys];
-        //        for (NSString *key in allKeys)
+        //        if (params.count < 1)
         //        {
-        //            NSInteger index = [allKeys indexOfObject:key];
-        //            NSString *paramStr = nil;
-        //            id para = params[key];
-        //            if ([para isKindOfClass:[NSString class]])
-        //            {
-        //                paramStr = para;
-        //            }
-        //            else if ([para isKindOfClass:[NSNumber class]])
-        //            {
-        //                paramStr = [NSString stringWithFormat:@"%zd",[para integerValue]];
-        //            }
-        //            else
-        //            {
-        //                paramStr = para;
-        //            }
-        //
-        //            NSString *str=[key stringByAppendingString:[@"="stringByAppendingString:paramStr]];
-        //            [paramsStr appendString:str];
-        //            if (index != allKeys.count - 1)
-        //            {
-        //                [paramsStr appendString:@"&"];
-        //            }
+        //            [paramsStr appendString:@"&"];
         //        }
-        if (params.count < 1)
-        {
-            [paramsStr appendString:@"&"];
-        }
-        [paramsStr appendString:@"type=JSON"];
+        //        [paramsStr appendString:@"type=JSON"];
         //设置请求体
         requestM.HTTPBody = [paramsStr dataUsingEncoding:NSUTF8StringEncoding];
         //创建会话对象
@@ -265,7 +226,7 @@
         }
         else if ([para isKindOfClass:[NSDictionary class]])
         {
-            paramStr = [XBNetHandle getParamsStrWithParamsDic:para];
+            paramsStr = [[XBNetHandle jsonStrFromDict:para] mutableCopy];
         }
         else
         {
@@ -320,6 +281,50 @@
         error = [[NSError alloc] initWithDomain:@"服务器返回数据异常" code:kResponseErrorCode userInfo:nil];
     }
     return error;
+}
+
+// 字典转json字符串方法
++ (NSString *)jsonStrFromDict:(NSDictionary *)dict
+
+{
+    NSError *error;
+    
+    //    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dict options:nil error:&error];
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dict options:NSJSONWritingPrettyPrinted error:&error];
+    
+    NSString *jsonString;
+    
+    if (error) {
+        
+        NSLog(@"%@",error);
+        return nil;
+        
+    }else{
+        
+        jsonString = [[NSString alloc]initWithData:jsonData encoding:NSUTF8StringEncoding];
+        
+    }
+    
+    NSMutableString *mutStr = [NSMutableString stringWithString:jsonString];
+    
+    NSRange range = {0,jsonString.length};
+    
+    //去掉字符串中的空格
+    
+    [mutStr replaceOccurrencesOfString:@" " withString:@"" options:NSLiteralSearch range:range];
+    
+    NSRange range2 = {0,mutStr.length};
+    
+    //去掉字符串中的换行符
+    
+    [mutStr replaceOccurrencesOfString:@"\n" withString:@"" options:NSLiteralSearch range:range2];
+    
+    return mutStr;
+    
+    //    NSString *encodedValue = [mutStr stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    //
+    //    return encodedValue;
+    
 }
 
 
