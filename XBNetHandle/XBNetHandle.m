@@ -30,36 +30,6 @@
     return handle;
 }
 
-+ (NSError *)handleHttpUrlResponse:(NSURLResponse *)response
-{
-    NSError *error = nil;
-    if ([response isKindOfClass:[NSHTTPURLResponse class]])
-    {
-        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-        NSInteger code = httpResponse.statusCode;
-        if (code == 200)
-        {
-            
-        }
-        else if (code == 404 || code == -1100)
-        {
-            error = [[NSError alloc] initWithDomain:@"请求的页面不存在" code:kResponseErrorCode userInfo:nil];
-        }
-        else if (code == 503)
-        {
-            error = [[NSError alloc] initWithDomain:@"服务不可用" code:kResponseErrorCode userInfo:nil];
-        }
-        else if (code == -1001)
-        {
-            error = [[NSError alloc] initWithDomain:@"请求超时" code:kResponseErrorCode userInfo:nil];
-        }
-        else
-        {
-            error = [[NSError alloc] initWithDomain:@"服务器返回数据异常" code:kResponseErrorCode userInfo:nil];
-        }
-    }
-    return error;
-}
 
 #pragma mark - get、post请求
 /*----- get请求 -----*/
@@ -67,17 +37,19 @@
 {
     if (urlStr.length)
     {
-        NSURL *url = [NSURL URLWithString:urlStr];
+        NSURL *url = [NSURL URLWithString:[XBNetHandle stringUseNSUTF8:urlStr]];
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
         NSURLSession *session = [NSURLSession sharedSession];
         NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-            NSError *httpError = [XBNetHandle handleHttpUrlResponse:response];
+            NSError *httpError = [XBNetHandle handleHttpUrlResponse:response responseError:error];
             if (httpError)
             {
-                if (failureBlock)
-                {
-                    failureBlock(httpError);
-                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (failureBlock)
+                    {
+                        failureBlock(httpError);
+                    }
+                });
                 return;
             }
             
@@ -113,24 +85,11 @@
                     }
                 }
             });
-            //            NSLog(@"\rGET请求\r请求链接是：%@",urlStr);
-            //            NSLog(@"请求结果是：%@",data);
-            //            dispatch_async(dispatch_get_main_queue(), ^{
-            //                if (error)
-            //                {
-            //                    failureBlock(error);
-            //                }
-            //                else if (data)
-            //                {
-            //                    successBlock(data);
-            //                }
-            //            });
         }];
         
         [task resume];
     }
 }
-
 
 /*----- post请求 -----*/
 + (void)postRequestWithUrlStr:(NSString *)urlStr params:(NSDictionary *)params successBlock:(XBRequestSuccessBlock)successBlock failureBlock:(XBFailureBlock)failureBlock
@@ -151,34 +110,8 @@
         requestM.HTTPMethod = @"POST";
         
         //拼接参数
-        NSMutableString *paramsStr=[@"" mutableCopy];
-        NSArray *allKeys = [params allKeys];
-        for (NSString *key in allKeys)
-        {
-            NSInteger index = [allKeys indexOfObject:key];
-            NSString *paramStr = nil;
-            id para = params[key];
-            if ([para isKindOfClass:[NSString class]])
-            {
-                paramStr = para;
-            }
-            else if ([para isKindOfClass:[NSNumber class]])
-            {
-                paramStr = [NSString stringWithFormat:@"%zd",[para integerValue]];
-            }
-            else
-            {
-                paramStr = para;
-            }
-            
-            NSString *str=[key stringByAppendingString:[@"="stringByAppendingString:paramStr]];
-            [paramsStr appendString:str];
-            if (index != allKeys.count - 1)
-            {
-                [paramsStr appendString:@"&"];
-            }
-        }
-        //        if (params.count<1)
+        NSMutableString *paramsStr = [XBNetHandle getParamsStrWithParamsDic:params];
+        //        if (params.count < 1)
         //        {
         //            [paramsStr appendString:@"&"];
         //        }
@@ -190,13 +123,15 @@
         //创建请求 Task
         NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:requestM completionHandler:
                                           ^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-                                              NSError *httpError = [XBNetHandle handleHttpUrlResponse:response];
+                                              NSError *httpError = [XBNetHandle handleHttpUrlResponse:response responseError:error];
                                               if (httpError)
                                               {
-                                                  if (failureBlock)
-                                                  {
-                                                      failureBlock(httpError);
-                                                  }
+                                                  dispatch_async(dispatch_get_main_queue(), ^{
+                                                      if (failureBlock)
+                                                      {
+                                                          failureBlock(httpError);
+                                                      }
+                                                  });
                                                   return;
                                               }
                                               
@@ -267,6 +202,129 @@
         }
     }
     return NO;
+}
+
+/**
+ 把参数字典拼接成参数字符串
+ */
++ (NSMutableString *)getParamsStrWithParamsDic:(NSDictionary *)params
+{
+    NSMutableString *paramsStr = [NSMutableString new];
+    NSArray *allKeys = [params allKeys];
+    for (NSString *key in allKeys)
+    {
+        NSInteger index = [allKeys indexOfObject:key];
+        NSString *paramStr = nil;
+        id para = params[key];
+        if ([para isKindOfClass:[NSString class]])
+        {
+            paramStr = para;
+        }
+        else if ([para isKindOfClass:[NSNumber class]])
+        {
+            paramStr = [NSString stringWithFormat:@"%zd",[para integerValue]];
+        }
+        else if ([para isKindOfClass:[NSDictionary class]])
+        {
+            paramsStr = [[XBNetHandle jsonStrFromDict:para] mutableCopy];
+        }
+        else
+        {
+            paramsStr = para;
+        }
+        
+        NSString *str=[key stringByAppendingString:[@"="stringByAppendingString:paramStr]];
+        [paramsStr appendString:str];
+        if (index != allKeys.count - 1)
+        {
+            [paramsStr appendString:@"&"];
+        }
+    }
+    return paramsStr;
+}
+
+/**
+ 处理服务器错误
+ */
++ (NSError *)handleHttpUrlResponse:(NSURLResponse *)response responseError:(NSError *)responseError
+{
+    NSInteger code = 200;
+    NSError *error = nil;
+    if (responseError)
+    {
+        code = responseError.code;
+    }
+    if (code == 200 && [response isKindOfClass:[NSHTTPURLResponse class]])
+    {
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+        code = httpResponse.statusCode;
+    }
+    
+    if (code == 200)
+    {
+        
+    }
+    else if (code == 404 || code == -1100 || code == -1003)
+    {
+        error = [[NSError alloc] initWithDomain:@"请求的页面不存在" code:kResponseErrorCode userInfo:nil];
+    }
+    else if (code == 503)
+    {
+        error = [[NSError alloc] initWithDomain:@"服务不可用" code:kResponseErrorCode userInfo:nil];
+    }
+    else if (code == -1001)
+    {
+        error = [[NSError alloc] initWithDomain:@"请求超时" code:kResponseErrorCode userInfo:nil];
+    }
+    else
+    {
+        error = [[NSError alloc] initWithDomain:@"服务器返回数据异常" code:kResponseErrorCode userInfo:nil];
+    }
+    return error;
+}
+
+// 字典转json字符串方法
++ (NSString *)jsonStrFromDict:(NSDictionary *)dict
+
+{
+    NSError *error;
+    
+    //    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dict options:nil error:&error];
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dict options:NSJSONWritingPrettyPrinted error:&error];
+    
+    NSString *jsonString;
+    
+    if (error) {
+        
+        NSLog(@"%@",error);
+        return nil;
+        
+    }else{
+        
+        jsonString = [[NSString alloc]initWithData:jsonData encoding:NSUTF8StringEncoding];
+        
+    }
+    
+    NSMutableString *mutStr = [NSMutableString stringWithString:jsonString];
+    
+    NSRange range = {0,jsonString.length};
+    
+    //去掉字符串中的空格
+    
+    [mutStr replaceOccurrencesOfString:@" " withString:@"" options:NSLiteralSearch range:range];
+    
+    NSRange range2 = {0,mutStr.length};
+    
+    //去掉字符串中的换行符
+    
+    [mutStr replaceOccurrencesOfString:@"\n" withString:@"" options:NSLiteralSearch range:range2];
+    
+    return mutStr;
+    
+    //    NSString *encodedValue = [mutStr stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    //
+    //    return encodedValue;
+    
 }
 
 
