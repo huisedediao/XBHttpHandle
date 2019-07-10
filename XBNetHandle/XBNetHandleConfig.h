@@ -1,13 +1,13 @@
 //
-//  XBNetworkingPublic.h
+//  XBNetHandleConfig.h
 //  XBHttpHandle
 //
 //  Created by xxb on 2017/8/1.
 //  Copyright © 2017年 xxb. All rights reserved.
 //
 
-#ifndef XBNetworkingPublic_h
-#define XBNetworkingPublic_h
+#ifndef XBNetHandleConfig_h
+#define XBNetHandleConfig_h
 
 //头文件----------------------------------------------------------------
 #import "XBNetModel.h"
@@ -35,4 +35,4 @@ typedef void(^XBRequestSuccessBlock)(NSData *data);
 
 
 
-#endif /* XBNetworkingPublic_h */
+#endif /* XBNetHandleConfig_h */

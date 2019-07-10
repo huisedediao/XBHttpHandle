@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F144F0B222D5E3B7000B93FA /* XBNetModel.m in Sources */ = {isa = PBXBuildFile; fileRef = F144F0A922D5E3B7000B93FA /* XBNetModel.m */; };
+		F144F0B322D5E3B7000B93FA /* XBDownloadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = F144F0AA22D5E3B7000B93FA /* XBDownloadTask.m */; };
+		F144F0B422D5E3B7000B93FA /* XBDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F144F0AC22D5E3B7000B93FA /* XBDownloadManager.m */; };
+		F144F0B522D5E3B7000B93FA /* XBNetHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = F144F0AD22D5E3B7000B93FA /* XBNetHandle.m */; };
 		F1FF6A2A1F3077F7001EC42A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F1FF6A291F3077F7001EC42A /* main.m */; };
 		F1FF6A2D1F3077F7001EC42A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F1FF6A2C1F3077F7001EC42A /* AppDelegate.m */; };
 		F1FF6A301F3077F7001EC42A /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F1FF6A2F1F3077F7001EC42A /* ViewController.m */; };
@@ -15,10 +19,6 @@
 		F1FF6A381F3077F7001EC42A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F1FF6A361F3077F7001EC42A /* LaunchScreen.storyboard */; };
 		F1FF6A431F3077F7001EC42A /* XBHttpHandleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F1FF6A421F3077F7001EC42A /* XBHttpHandleTests.m */; };
 		F1FF6A4E1F3077F7001EC42A /* XBHttpHandleUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = F1FF6A4D1F3077F7001EC42A /* XBHttpHandleUITests.m */; };
-		F1FF6A5E1F30788D001EC42A /* XBNetHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = F1FF6A5D1F30788D001EC42A /* XBNetHandle.m */; };
-		F1FF6A611F3078A4001EC42A /* XBDownloadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = F1FF6A601F3078A4001EC42A /* XBDownloadTask.m */; };
-		F1FF6A641F3078BB001EC42A /* XBDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F1FF6A631F3078BB001EC42A /* XBDownloadManager.m */; };
-		F1FF6A691F3161BE001EC42A /* XBNetModel.m in Sources */ = {isa = PBXBuildFile; fileRef = F1FF6A681F3161BE001EC42A /* XBNetModel.m */; };
 		F1FF6A7D1F31768D001EC42A /* XBTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F1FF6A7C1F31768D001EC42A /* XBTableViewCell.m */; };
 /* End PBXBuildFile section */
 
@@ -40,6 +40,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F144F0A922D5E3B7000B93FA /* XBNetModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XBNetModel.m; sourceTree = "<group>"; };
+		F144F0AA22D5E3B7000B93FA /* XBDownloadTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XBDownloadTask.m; sourceTree = "<group>"; };
+		F144F0AB22D5E3B7000B93FA /* XBNetHandleConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XBNetHandleConfig.h; sourceTree = "<group>"; };
+		F144F0AC22D5E3B7000B93FA /* XBDownloadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XBDownloadManager.m; sourceTree = "<group>"; };
+		F144F0AD22D5E3B7000B93FA /* XBNetHandle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XBNetHandle.m; sourceTree = "<group>"; };
+		F144F0AE22D5E3B7000B93FA /* XBNetModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XBNetModel.h; sourceTree = "<group>"; };
+		F144F0AF22D5E3B7000B93FA /* XBDownloadTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XBDownloadTask.h; sourceTree = "<group>"; };
+		F144F0B022D5E3B7000B93FA /* XBNetHandle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XBNetHandle.h; sourceTree = "<group>"; };
+		F144F0B122D5E3B7000B93FA /* XBDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XBDownloadManager.h; sourceTree = "<group>"; };
 		F1FF6A251F3077F7001EC42A /* XBHttpHandle.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = XBHttpHandle.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1FF6A291F3077F7001EC42A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		F1FF6A2B1F3077F7001EC42A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -56,15 +65,6 @@
 		F1FF6A491F3077F7001EC42A /* XBHttpHandleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XBHttpHandleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1FF6A4D1F3077F7001EC42A /* XBHttpHandleUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XBHttpHandleUITests.m; sourceTree = "<group>"; };
 		F1FF6A4F1F3077F7001EC42A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F1FF6A5C1F30788D001EC42A /* XBNetHandle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XBNetHandle.h; sourceTree = "<group>"; };
-		F1FF6A5D1F30788D001EC42A /* XBNetHandle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XBNetHandle.m; sourceTree = "<group>"; };
-		F1FF6A5F1F3078A4001EC42A /* XBDownloadTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XBDownloadTask.h; sourceTree = "<group>"; };
-		F1FF6A601F3078A4001EC42A /* XBDownloadTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XBDownloadTask.m; sourceTree = "<group>"; };
-		F1FF6A621F3078BB001EC42A /* XBDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XBDownloadManager.h; sourceTree = "<group>"; };
-		F1FF6A631F3078BB001EC42A /* XBDownloadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XBDownloadManager.m; sourceTree = "<group>"; };
-		F1FF6A661F30790B001EC42A /* XBNetworkingPublic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XBNetworkingPublic.h; sourceTree = "<group>"; };
-		F1FF6A671F3161BE001EC42A /* XBNetModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XBNetModel.h; sourceTree = "<group>"; };
-		F1FF6A681F3161BE001EC42A /* XBNetModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XBNetModel.m; sourceTree = "<group>"; };
 		F1FF6A7B1F31768D001EC42A /* XBTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XBTableViewCell.h; sourceTree = "<group>"; };
 		F1FF6A7C1F31768D001EC42A /* XBTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XBTableViewCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -94,6 +94,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F144F0A822D5E3B7000B93FA /* XBNetHandle */ = {
+			isa = PBXGroup;
+			children = (
+				F144F0A922D5E3B7000B93FA /* XBNetModel.m */,
+				F144F0AA22D5E3B7000B93FA /* XBDownloadTask.m */,
+				F144F0AB22D5E3B7000B93FA /* XBNetHandleConfig.h */,
+				F144F0AC22D5E3B7000B93FA /* XBDownloadManager.m */,
+				F144F0AD22D5E3B7000B93FA /* XBNetHandle.m */,
+				F144F0AE22D5E3B7000B93FA /* XBNetModel.h */,
+				F144F0AF22D5E3B7000B93FA /* XBDownloadTask.h */,
+				F144F0B022D5E3B7000B93FA /* XBNetHandle.h */,
+				F144F0B122D5E3B7000B93FA /* XBDownloadManager.h */,
+			);
+			name = XBNetHandle;
+			path = ../../XBNetHandle;
+			sourceTree = "<group>";
+		};
 		F1FF6A1C1F3077F7001EC42A = {
 			isa = PBXGroup;
 			children = (
@@ -117,7 +134,7 @@
 		F1FF6A271F3077F7001EC42A /* XBHttpHandle */ = {
 			isa = PBXGroup;
 			children = (
-				F1FF6A5B1F307862001EC42A /* XBNetworking */,
+				F144F0A822D5E3B7000B93FA /* XBNetHandle */,
 				F1FF6A2B1F3077F7001EC42A /* AppDelegate.h */,
 				F1FF6A2C1F3077F7001EC42A /* AppDelegate.m */,
 				F1FF6A2E1F3077F7001EC42A /* ViewController.h */,
@@ -157,22 +174,6 @@
 				F1FF6A4F1F3077F7001EC42A /* Info.plist */,
 			);
 			path = XBHttpHandleUITests;
-			sourceTree = "<group>";
-		};
-		F1FF6A5B1F307862001EC42A /* XBNetworking */ = {
-			isa = PBXGroup;
-			children = (
-				F1FF6A5C1F30788D001EC42A /* XBNetHandle.h */,
-				F1FF6A5D1F30788D001EC42A /* XBNetHandle.m */,
-				F1FF6A5F1F3078A4001EC42A /* XBDownloadTask.h */,
-				F1FF6A601F3078A4001EC42A /* XBDownloadTask.m */,
-				F1FF6A621F3078BB001EC42A /* XBDownloadManager.h */,
-				F1FF6A631F3078BB001EC42A /* XBDownloadManager.m */,
-				F1FF6A661F30790B001EC42A /* XBNetworkingPublic.h */,
-				F1FF6A671F3161BE001EC42A /* XBNetModel.h */,
-				F1FF6A681F3161BE001EC42A /* XBNetModel.m */,
-			);
-			path = XBNetworking;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -242,6 +243,7 @@
 				TargetAttributes = {
 					F1FF6A241F3077F7001EC42A = {
 						CreatedOnToolsVersion = 8.3.3;
+						DevelopmentTeam = RC2BP8QGY9;
 						ProvisioningStyle = Automatic;
 					};
 					F1FF6A3D1F3077F7001EC42A = {
@@ -308,12 +310,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F1FF6A691F3161BE001EC42A /* XBNetModel.m in Sources */,
+				F144F0B222D5E3B7000B93FA /* XBNetModel.m in Sources */,
 				F1FF6A7D1F31768D001EC42A /* XBTableViewCell.m in Sources */,
+				F144F0B422D5E3B7000B93FA /* XBDownloadManager.m in Sources */,
+				F144F0B322D5E3B7000B93FA /* XBDownloadTask.m in Sources */,
 				F1FF6A301F3077F7001EC42A /* ViewController.m in Sources */,
-				F1FF6A641F3078BB001EC42A /* XBDownloadManager.m in Sources */,
-				F1FF6A611F3078A4001EC42A /* XBDownloadTask.m in Sources */,
-				F1FF6A5E1F30788D001EC42A /* XBNetHandle.m in Sources */,
+				F144F0B522D5E3B7000B93FA /* XBNetHandle.m in Sources */,
 				F1FF6A2D1F3077F7001EC42A /* AppDelegate.m in Sources */,
 				F1FF6A2A1F3077F7001EC42A /* main.m in Sources */,
 			);
@@ -466,10 +468,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = RC2BP8QGY9;
 				INFOPLIST_FILE = XBHttpHandle/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.company.XBHttpHandle;
+				PRODUCT_BUNDLE_IDENTIFIER = com.xxb.study;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -478,10 +481,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = RC2BP8QGY9;
 				INFOPLIST_FILE = XBHttpHandle/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.company.XBHttpHandle;
+				PRODUCT_BUNDLE_IDENTIFIER = com.xxb.study;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

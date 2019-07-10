@@ -9,7 +9,7 @@
 #import "ViewController.h"
 #import "XBDownloadManager.h"
 #import "XBTableViewCell.h"
-#import "XBNetworkingPublic.h"
+#import "XBNetHandleConfig.h"
 
 #define downUrlStr @"http://dldir1.qq.com/qqfile/QQforMac/QQ_V4.0.2.dmg"
 

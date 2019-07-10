@@ -7,7 +7,7 @@
 //
 
 #import "XBDownloadManager.h"
-#import "XBNetworkingPublic.h"
+#import "XBNetHandleConfig.h"
 #import <UIKit/UIKit.h>
 #import "XBNetHandle.h"
 

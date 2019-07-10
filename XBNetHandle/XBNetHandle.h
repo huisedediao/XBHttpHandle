@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "XBNetworkingPublic.h"
+#import "XBNetHandleConfig.h"
 #import "XBDownloadTask.h"
 
 ///服务器返回数据异常的错误码

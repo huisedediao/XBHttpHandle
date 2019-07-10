@@ -7,7 +7,7 @@
 //
 
 #import "XBTableViewCell.h"
-#import "XBNetworkingPublic.h"
+#import "XBNetHandleConfig.h"
 #import "XBDownloadManager.h"
 #import "XBNetHandle.h"
 

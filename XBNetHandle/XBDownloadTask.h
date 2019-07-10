@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "XBNetworkingPublic.h"
+#import "XBNetHandleConfig.h"
 
 
 @interface XBDownloadTask : NSObject <NSCoding>
